@@ -2013,8 +2013,10 @@ if (process.env.NODE_ENV !== 'production') {
  * will remain to ensure logic does not differ in production.
  */
 
+var NODE_ENV = process.env.NODE_ENV;
+
 var invariant = function(condition, format, a, b, c, d, e, f) {
-  if (process.env.NODE_ENV !== 'production') {
+  if (NODE_ENV !== 'production') {
     if (format === undefined) {
       throw new Error('invariant requires an error message argument');
     }
@@ -2041,7 +2043,7 @@ var invariant = function(condition, format, a, b, c, d, e, f) {
   }
 };
 
-var browser = invariant;
+var invariant_1 = invariant;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -2101,7 +2103,7 @@ var Router = function (_React$Component) {
         history = _props.history;
 
 
-    browser(children == null || React.Children.count(children) === 1, "A <Router> may have only one child element");
+    invariant_1(children == null || React.Children.count(children) === 1, "A <Router> may have only one child element");
 
     // Do this here so we can setState when a <Redirect> changes the
     // location in componentWillMount. This happens e.g. when doing
@@ -2292,9 +2294,9 @@ var Link = function (_React$Component) {
         innerRef = _props.innerRef,
         props = _objectWithoutProperties(_props, ["replace", "to", "innerRef"]); // eslint-disable-line no-unused-vars
 
-    browser(this.context.router, "You should not use <Link> outside a <Router>");
+    invariant_1(this.context.router, "You should not use <Link> outside a <Router>");
 
-    browser(to !== undefined, 'You must specify the "to" property');
+    invariant_1(to !== undefined, 'You must specify the "to" property');
 
     var history$1 = this.context.router.history;
 
@@ -2929,7 +2931,7 @@ var Route = function (_React$Component) {
 
     if (computedMatch) return computedMatch; // <Switch> already computed the match for us
 
-    browser(router, "You should not use <Route> or withRouter() outside a <Router>");
+    invariant_1(router, "You should not use <Route> or withRouter() outside a <Router>");
 
     var route = router.route;
 
@@ -3110,7 +3112,7 @@ var Prompt = function (_React$Component) {
   };
 
   Prompt.prototype.componentWillMount = function componentWillMount() {
-    browser(this.context.router, "You should not use <Prompt> outside a <Router>");
+    invariant_1(this.context.router, "You should not use <Prompt> outside a <Router>");
 
     if (this.props.when) this.enable(this.props.message);
   };
@@ -3212,7 +3214,7 @@ var Redirect = function (_React$Component) {
   };
 
   Redirect.prototype.componentWillMount = function componentWillMount() {
-    browser(this.context.router, "You should not use <Redirect> outside a <Router>");
+    invariant_1(this.context.router, "You should not use <Redirect> outside a <Router>");
 
     if (this.isStatic()) this.perform();
   };
@@ -3331,7 +3333,7 @@ var createURL = function createURL(location) {
 
 var staticHandler = function staticHandler(methodName) {
   return function () {
-    browser(false, "You cannot %s with <StaticRouter>", methodName);
+    invariant_1(false, "You cannot %s with <StaticRouter>", methodName);
   };
 };
 
@@ -3454,7 +3456,7 @@ var Switch = function (_React$Component) {
   }
 
   Switch.prototype.componentWillMount = function componentWillMount() {
-    browser(this.context.router, "You should not use <Switch> outside a <Router>");
+    invariant_1(this.context.router, "You should not use <Switch> outside a <Router>");
   };
 
   Switch.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
@@ -3984,14 +3986,16 @@ var requestErrorIntercept = function requestErrorIntercept(url, options) {
  */
 
 
-var zlrequest = extend({
+var request$2 = extend({
   errorHandler: errorHandler,
   // 默认错误处理
   credentials: 'include' // 默认请求是否带上cookie
 
 });
-zlrequest.interceptors.request.use(requestErrorIntercept);
-zlrequest.interceptors.response.use(responseErrorIntercept);
+request$2.interceptors.request.use(requestErrorIntercept);
+request$2.interceptors.response.use(responseErrorIntercept);
+
+var zlrequest = function zlrequest(url, option, callback) {};
 
 exports.RequestError = RequestError;
 exports.ResponseError = ResponseError;
