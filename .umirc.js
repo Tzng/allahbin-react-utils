@@ -5,6 +5,12 @@ export default {
       {
         umd: false
       }
-    ]
+    ],
+    [
+      'umi-plugin-react',
+      {
+        antd: true,
+      }
+    ],
   ]
 };

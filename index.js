@@ -3949,25 +3949,53 @@ var errorHandler = function errorHandler(error) {
   }
 };
 /**
+ * 请求错误拦截——后台返回错误数据的拦截
+ * @param res 后台传递的结果数据
+ */
+
+
+var responseErrorIntercept = function responseErrorIntercept(response) {
+  // 判断是否是线上环境
+  if (process.env.NODE_ENV === 'development') {
+    var resJson = resJson.json().then(function (res) {
+      console.log('%c ' + new Date().toLocaleString() + '本次返回值：', 'color:#9100ff', resJson);
+      return response;
+    });
+  }
+
+  return response;
+};
+
+var requestErrorIntercept = function requestErrorIntercept(url, options) {
+  console.log(process.env.NODE_ENV); // 判断是否是线上环境
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('%c ' + new Date().toLocaleString() + '本次请求地址：', 'color:#007eff', url);
+    console.log('%c ' + new Date().toLocaleString() + '本次请求参数：', 'color:blue', options.body);
+  }
+
+  return {
+    url: url,
+    options: options
+  };
+};
+/**
  * 配置request请求时的默认参数
  */
 
 
-var request$2 = extend({
+var zlrequest = extend({
   errorHandler: errorHandler,
   // 默认错误处理
   credentials: 'include' // 默认请求是否带上cookie
 
 });
-request$2.interceptors.response.use(function (response) {
-  console.log(response);
-  antd.message.success("请求成功");
-  return response;
-});
+zlrequest.interceptors.request.use(requestErrorIntercept);
+zlrequest.interceptors.response.use(responseErrorIntercept);
 
 exports.RequestError = RequestError;
 exports.ResponseError = ResponseError;
 exports.default = request$1;
 exports.extend = extend;
 exports.fetch = fetch;
-exports.zlrequest = request$2;
+exports.zlrequest = zlrequest;

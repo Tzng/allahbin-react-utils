@@ -55,8 +55,5 @@
     "README.md",
     "type/index.d.ts"
   ],
-  "types": [
-    "types/index.d.ts",
-    "types/typings.d.ts"
-  ]
+  "types": "types/index.d.ts"
 }
