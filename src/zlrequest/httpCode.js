@@ -20,4 +20,18 @@ const codeMessage = {
   504: '网关超时。',
 };
 
+// 默认的配置项
+export const defOption = {
+  method: 'POST',
+  manner: 'form',
+  setToken: false,
+  isFile: false,
+  headers: {
+    'usertoken': 'string',
+    'Content-Type': 'application/json;charset=utf-8',
+  },
+  mode: 'cors',
+  cache: 'no-cache', // *default, no-cache, reload, force-cache,
+};
+
 export default codeMessage

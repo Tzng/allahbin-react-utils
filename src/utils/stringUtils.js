@@ -4,7 +4,7 @@ export default class stringUtils {
    * 将参数中的null，''等属性删除掉
    * @param params 需要判断的对象
    */
-  static buildParamsNull(params?: object) {
+  static buildParamsNull(params) {
     const newParams = {};
     if (params) {
       Object.keys(params).forEach(key => {
@@ -20,7 +20,7 @@ export default class stringUtils {
    * 判断是否存在
    * @param str 需要判断的参数
    */
-  static isNoExit(str: any) {
+  static isNoExit(str) {
     if (str === '') {
       return false;
     }
