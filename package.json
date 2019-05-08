@@ -1,0 +1,49 @@
+{
+  "name": "allahbin-react-utils",
+  "version": "1.0.0",
+  "description": "阿拉斌的小工具",
+  "author:": "allahbin",
+  "main": "index.js",
+  "scripts": {
+    "dev": "umi lib build --w",
+    "build": "umi lib build",
+    "test": "umi-test",
+    "test:watch": "umi-test --watch",
+    "test:cover": "umi-test --coverage",
+    "lint": "umi-lint src",
+    "ci": "npm run lint && npm run test:cover",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "prepublishOnly": "rm -rf ./dist && npm run lint && npm run test && npm run build",
+    "pub": "npm publish",
+    "pub-beta": "npm publish --tag beta",
+    "precommit": "umi-lint --staged --prettier --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tzng/allahbin-react-utils.git"
+  },
+  "author": "allahbin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tzng/allahbin-react-utils/issues"
+  },
+  "homepage": "https://github.com/Tzng/allahbin-react-utils#readme",
+  "dependencies": {
+    "query-string": "^6.0.0",
+    "whatwg-fetch": "^2.0.0"
+  },
+  "devDependencies": {
+    "create-test-server": "2.3.1",
+    "debug": "^4.1.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-import": "^2.14.0",
+    "iconv-lite": "^0.4.24",
+    "jest": "^23.5.0",
+    "typescript": "^3.0.3",
+    "umi": "^2.5.0",
+    "umi-lint": "^1.0.0-alpha.1",
+    "umi-plugin-library": "^1.1.6",
+    "umi-test": "^1.4.0"
+  }
+}
