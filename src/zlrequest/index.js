@@ -2,9 +2,9 @@
  * request 网络请求工具
  * 更详细的api文档: https://bigfish.alipay.com/doc/api#request
  */
-import { extend } from 'umi-request';
-import { notification } from 'antd';
-import router from 'umi/router';
+import { notification, message } from 'antd';
+import { router } from 'umi';
+import { extend } from '../umi-request';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -28,7 +28,7 @@ const codeMessage = {
  * 异常处理程序
  * any https://github.com/umijs/umi-request/issues/25
  */
-const errorHandler = (error: any) => {
+const errorHandler = (error) => {
   const { response = {} } = error;
   const errortext = codeMessage[response.status] || response.statusText;
   const { status, url } = response;
@@ -39,7 +39,7 @@ const errorHandler = (error: any) => {
     });
     // @HACK
     /* eslint-disable no-underscore-dangle */
-    (window as any).g_app._store.dispatch({
+    (window).g_app._store.dispatch({
       type: 'login/logout',
     });
     return;
@@ -68,6 +68,12 @@ const errorHandler = (error: any) => {
 const request = extend({
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
+});
+
+request.interceptors.response.use((response) => {
+  console.log(response);
+  message.success("请求成功");
+  return response;
 });
 
 export default request;

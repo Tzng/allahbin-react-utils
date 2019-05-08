@@ -29,10 +29,13 @@
   },
   "homepage": "https://github.com/Tzng/allahbin-react-utils#readme",
   "dependencies": {
+    "antd": "^3.17.0",
+    "history": "^4.7.2",
     "query-string": "^6.0.0",
     "whatwg-fetch": "^2.0.0"
   },
   "devDependencies": {
+    "@types/history": "^4.7.2",
     "create-test-server": "2.3.1",
     "debug": "^4.1.0",
     "eslint-config-airbnb-base": "^13.1.0",
@@ -45,5 +48,15 @@
     "umi-lint": "^1.0.0-alpha.1",
     "umi-plugin-library": "^1.1.6",
     "umi-test": "^1.4.0"
-  }
+  },
+  "files": [
+    "dist/",
+    "package.json",
+    "README.md",
+    "type/index.d.ts"
+  ],
+  "types": [
+    "types/index.d.ts",
+    "types/typings.d.ts"
+  ]
 }
