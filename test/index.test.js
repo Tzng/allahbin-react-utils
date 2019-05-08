@@ -1,7 +1,7 @@
 import createTestServer from 'create-test-server';
 import iconv from 'iconv-lite';
-import request, { extend } from '../src/index';
-import { MapCache } from '../src/utils';
+import request, { extend } from '../src';
+import { MapCache } from '../src/umi-request/utils';
 
 const debug = require('debug')('afx-request:test');
 

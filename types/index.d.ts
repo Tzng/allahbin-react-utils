@@ -20,24 +20,64 @@ export interface ResponseError<D = any> extends Error {
  * @param {string} charset 字符集, 默认utf8
  */
 export interface RequestOptionsInit extends RequestInit {
+  /**
+   * 字符集
+   */
   charset?: 'utf8' | 'gbk';
+  /**
+   * requestType post类型, 用来简化写content-Type, 默认json
+   */
   requestType?: 'json' | 'form';
+  /**
+   * post数据
+   */
   data?: any;
+  /**
+   * 非post的参数
+   */
   params?: object;
+  /**
+   * 响应数据
+   */
   responseType?: ResponseType;
+  /**
+   * 是否缓存
+   */
   useCache?: boolean;
+  /**
+   * 缓存生命周期
+   */
   ttl?: number;
+  /**
+   * 请求超时时间
+   */
   timeout?: number;
+  /**
+   * errorHandler 错误处理
+   * @param error
+   */
   errorHandler?: (error: ResponseError) => void;
+  /**
+   * 前缀
+   */
   prefix?: string;
+  /**
+   * 后缀
+   */
   suffix?: string;
 }
 
 export interface RequestOptionsWithoutResponse extends RequestOptionsInit {
+  /**
+   * 是否获取源response, 返回结果将包裹一层
+   */
   getResponse: false;
 }
 
 export interface RequestOptionsWithResponse extends RequestOptionsInit {
+  /**
+   * 是否获取源response, 返回结果将包裹一层
+   */
   getResponse: true;
 }
 

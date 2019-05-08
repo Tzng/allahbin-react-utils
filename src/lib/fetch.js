@@ -1,5 +1,5 @@
 import 'whatwg-fetch';
-import defaultInterceptor from '../defaultInterceptor';
+import defaultInterceptor from '../umi-request/defaultInterceptor';
 
 const requestInterceptors = [];
 export const responseInterceptors = [];

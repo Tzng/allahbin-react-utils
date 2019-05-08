@@ -1,4 +1,4 @@
-import fetch from './lib/fetch';
+import fetch from '../lib/fetch';
 import { MapCache } from './utils';
 import WrappedFetch from './wrapped-fetch';
 import WrappedRpc from './wrapped-rpc';

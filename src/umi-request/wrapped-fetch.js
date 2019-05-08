@@ -1,4 +1,4 @@
-import fetch, { responseInterceptors } from './lib/fetch';
+import fetch, { responseInterceptors } from '../lib/fetch';
 import { RequestError, ResponseError, readerGBK, safeJsonParse } from './utils';
 
 export default class WrappedFetch {
