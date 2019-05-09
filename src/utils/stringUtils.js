@@ -8,8 +8,8 @@ export default class stringUtils {
     const newParams = {};
     if (params) {
       Object.keys(params).forEach(key => {
-        if (this.isNoExit(params[key])) {
-
+        if (this.isExit(params[key])) {
+          newParams.key = params[key]
         }
       })
     }
@@ -20,7 +20,7 @@ export default class stringUtils {
    * 判断是否存在
    * @param str 需要判断的参数
    */
-  static isNoExit(str) {
+  static isExit(str) {
     if (str === '') {
       return false;
     }

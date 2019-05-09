@@ -31,7 +31,6 @@ export const defOption = {
     'Content-Type': 'application/json;charset=utf-8',
   },
   mode: 'cors',
-  cache: 'no-cache', // *default, no-cache, reload, force-cache,
 };
 
 export default codeMessage

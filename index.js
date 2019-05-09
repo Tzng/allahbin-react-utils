@@ -4,8 +4,8 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-require('whatwg-fetch');
-var queryString = require('query-string');
+var request = require('umi-request');
+var request__default = _interopDefault(request);
 require('antd');
 var React = _interopDefault(require('react'));
 var history = require('history');
@@ -48,110 +48,6 @@ function _objectSpread(target) {
 
 var objectSpread = _objectSpread;
 
-/**
- * 注册request拦截器
- * get 和 post 参数简化
- * post:
- * @param {json|form} requestType 数据的传输方式, 对应Content-Type, 覆盖常见的两种场景, 自动带上header和格式化数据.
- * @param {object} data 数据字段
- *
- * get:
- * @param {object} params query参数
- */
-
-var defaultInterceptor = (function (url) {
-  var originOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-  var options = objectSpread({}, originOptions); // 默认get, 兼容method大小写
-
-
-  var method = options.method || 'get';
-  method = method.toLowerCase();
-
-  if (method === 'post' || method === 'put' || method === 'patch' || method === 'delete') {
-    // requestType 简写默认值为 json
-    var _options$requestType = options.requestType,
-        requestType = _options$requestType === void 0 ? 'json' : _options$requestType,
-        data = options.data; // 数据使用类axios的新字段data, 避免引用后影响旧代码, 如将body stringify多次
-
-    if (data) {
-      var dataType = Object.prototype.toString.call(data);
-
-      if (dataType === '[object Object]' || dataType === '[object Array]') {
-        if (requestType === 'json') {
-          options.headers = objectSpread({
-            Accept: 'application/json',
-            'Content-Type': 'application/json;charset=UTF-8'
-          }, options.headers);
-          options.body = JSON.stringify(data);
-        } else if (requestType === 'form') {
-          options.headers = objectSpread({
-            Accept: 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-          }, options.headers);
-          options.body = queryString.stringify(data);
-        }
-      } else {
-        // 其他 requestType 自定义header
-        options.headers = objectSpread({
-          Accept: 'application/json'
-        }, options.headers);
-        options.body = data;
-      }
-    }
-  } // 支持类似axios 参数自动拼装, 其他method也可用, 不冲突.
-
-
-  if (options.params && Object.keys(options.params).length > 0) {
-    var str = url.indexOf('?') !== -1 ? '&' : '?';
-    url = "".concat(url).concat(str).concat(queryString.stringify(options.params));
-  }
-
-  return {
-    url: url,
-    options: options
-  };
-});
-
-var requestInterceptors = [];
-var responseInterceptors = [];
-
-function fetch(url) {
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  if (typeof url !== 'string') throw new Error('url MUST be a string'); // 执行 request 的拦截器
-
-  requestInterceptors.concat([defaultInterceptor]).forEach(function (handler) {
-    var ret = handler(url, options);
-    url = ret.url || url;
-    options = ret.options || options;
-  }); // 将 method 改为大写
-
-  options.method = options.method ? options.method.toUpperCase() : 'GET'; // 请求数据
-
-  var response = window.fetch(url, options); // 执行 response 的拦截器
-
-  responseInterceptors.forEach(function (handler) {
-    response = response.then(function (res) {
-      return handler(res, options);
-    });
-  });
-  return response;
-} // 支持拦截器，参考 axios 库的写法: https://github.com/axios/axios#interceptors
-
-
-fetch.interceptors = {
-  request: {
-    use: function use(handler) {
-      requestInterceptors.push(handler);
-    }
-  },
-  response: {
-    use: function use(handler) {
-      responseInterceptors.push(handler);
-    }
-  }
-};
-
 function unwrapExports (x) {
 	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
 }
@@ -159,638 +55,6 @@ function unwrapExports (x) {
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
-
-var _typeof_1 = createCommonjsModule(function (module) {
-function _typeof2(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
-
-function _typeof(obj) {
-  if (typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol") {
-    module.exports = _typeof = function _typeof(obj) {
-      return _typeof2(obj);
-    };
-  } else {
-    module.exports = _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof2(obj);
-    };
-  }
-
-  return _typeof(obj);
-}
-
-module.exports = _typeof;
-});
-
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-var assertThisInitialized = _assertThisInitialized;
-
-function _possibleConstructorReturn(self, call) {
-  if (call && (_typeof_1(call) === "object" || typeof call === "function")) {
-    return call;
-  }
-
-  return assertThisInitialized(self);
-}
-
-var possibleConstructorReturn = _possibleConstructorReturn;
-
-var getPrototypeOf = createCommonjsModule(function (module) {
-function _getPrototypeOf(o) {
-  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  };
-  return _getPrototypeOf(o);
-}
-
-module.exports = _getPrototypeOf;
-});
-
-var setPrototypeOf = createCommonjsModule(function (module) {
-function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  return _setPrototypeOf(o, p);
-}
-
-module.exports = _setPrototypeOf;
-});
-
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) setPrototypeOf(subClass, superClass);
-}
-
-var inherits = _inherits;
-
-function _isNativeFunction(fn) {
-  return Function.toString.call(fn).indexOf("[native code]") !== -1;
-}
-
-var isNativeFunction = _isNativeFunction;
-
-var construct = createCommonjsModule(function (module) {
-function isNativeReflectConstruct() {
-  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === "function") return true;
-
-  try {
-    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-function _construct(Parent, args, Class) {
-  if (isNativeReflectConstruct()) {
-    module.exports = _construct = Reflect.construct;
-  } else {
-    module.exports = _construct = function _construct(Parent, args, Class) {
-      var a = [null];
-      a.push.apply(a, args);
-      var Constructor = Function.bind.apply(Parent, a);
-      var instance = new Constructor();
-      if (Class) setPrototypeOf(instance, Class.prototype);
-      return instance;
-    };
-  }
-
-  return _construct.apply(null, arguments);
-}
-
-module.exports = _construct;
-});
-
-var wrapNativeSuper = createCommonjsModule(function (module) {
-function _wrapNativeSuper(Class) {
-  var _cache = typeof Map === "function" ? new Map() : undefined;
-
-  module.exports = _wrapNativeSuper = function _wrapNativeSuper(Class) {
-    if (Class === null || !isNativeFunction(Class)) return Class;
-
-    if (typeof Class !== "function") {
-      throw new TypeError("Super expression must either be null or a function");
-    }
-
-    if (typeof _cache !== "undefined") {
-      if (_cache.has(Class)) return _cache.get(Class);
-
-      _cache.set(Class, Wrapper);
-    }
-
-    function Wrapper() {
-      return construct(Class, arguments, getPrototypeOf(this).constructor);
-    }
-
-    Wrapper.prototype = Object.create(Class.prototype, {
-      constructor: {
-        value: Wrapper,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-    return setPrototypeOf(Wrapper, Class);
-  };
-
-  return _wrapNativeSuper(Class);
-}
-
-module.exports = _wrapNativeSuper;
-});
-
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
-      arr2[i] = arr[i];
-    }
-
-    return arr2;
-  }
-}
-
-var arrayWithoutHoles = _arrayWithoutHoles;
-
-function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-}
-
-var iterableToArray = _iterableToArray;
-
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
-}
-
-var nonIterableSpread = _nonIterableSpread;
-
-function _toConsumableArray(arr) {
-  return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();
-}
-
-var toConsumableArray = _toConsumableArray;
-
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-var classCallCheck = _classCallCheck;
-
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  return Constructor;
-}
-
-var createClass = _createClass;
-
-/**
- * 实现一个简单的Map cache, 稍后可以挪到 utils中, 提供session local map三种前端cache方式.
- * 1. 可直接存储对象   2. 内存无5M限制   3.缺点是刷新就没了, 看反馈后期完善.
- */
-var MapCache =
-/*#__PURE__*/
-function () {
-  function MapCache(options) {
-    classCallCheck(this, MapCache);
-
-    this.cache = new Map();
-    this.timer = {};
-    this.maxCache = options.maxCache || 0;
-  }
-
-  createClass(MapCache, [{
-    key: "get",
-    value: function get(key) {
-      return this.cache.get(JSON.stringify(key));
-    }
-  }, {
-    key: "set",
-    value: function set(key, value) {
-      var _this = this;
-
-      var ttl = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 60000;
-
-      // 如果超过最大缓存数, 删除头部的第一个缓存.
-      if (this.maxCache > 0 && this.cache.size >= this.maxCache) {
-        var deleteKey = toConsumableArray(this.cache.keys())[0];
-
-        this.cache.delete(deleteKey);
-
-        if (this.timer[deleteKey]) {
-          clearTimeout(this.timer[deleteKey]);
-        }
-      }
-
-      var cacheKey = JSON.stringify(key);
-      this.cache.set(cacheKey, value);
-
-      if (ttl > 0) {
-        this.timer[cacheKey] = setTimeout(function () {
-          _this.cache.delete(cacheKey);
-
-          delete _this.timer[cacheKey];
-        }, ttl);
-      }
-    }
-  }, {
-    key: "delete",
-    value: function _delete(key) {
-      var cacheKey = JSON.stringify(key);
-      delete this.timer[cacheKey];
-      return this.cache.delete(cacheKey);
-    }
-  }, {
-    key: "clear",
-    value: function clear() {
-      this.timer = {};
-      return this.cache.clear();
-    }
-  }]);
-
-  return MapCache;
-}();
-/**
- * 请求异常
- */
-
-var RequestError =
-/*#__PURE__*/
-function (_Error) {
-  inherits(RequestError, _Error);
-
-  function RequestError(text) {
-    var _this2;
-
-    classCallCheck(this, RequestError);
-
-    _this2 = possibleConstructorReturn(this, getPrototypeOf(RequestError).call(this, text));
-    _this2.name = 'RequestError';
-    return _this2;
-  }
-
-  return RequestError;
-}(wrapNativeSuper(Error));
-/**
- * 响应异常
- */
-
-var ResponseError =
-/*#__PURE__*/
-function (_Error2) {
-  inherits(ResponseError, _Error2);
-
-  function ResponseError(response, text, data) {
-    var _this3;
-
-    classCallCheck(this, ResponseError);
-
-    _this3 = possibleConstructorReturn(this, getPrototypeOf(ResponseError).call(this, text || response.statusText));
-    _this3.name = 'ResponseError';
-    _this3.data = data;
-    _this3.response = response;
-    return _this3;
-  }
-
-  return ResponseError;
-}(wrapNativeSuper(Error));
-/**
- * http://gitlab.alipay-inc.com/KBSJ/gxt/blob/release_gxt_S8928905_20180531/src/util/request.js#L63
- * 支持gbk
- */
-
-function readerGBK(file) {
-  return new Promise(function (resolve, reject) {
-    var reader = new FileReader();
-
-    reader.onload = function () {
-      resolve(reader.result);
-    };
-
-    reader.onerror = reject;
-    reader.readAsText(file, 'GBK'); // setup GBK decoding
-  });
-}
-/**
- * 安全的JSON.parse
- */
-
-function safeJsonParse(data) {
-  try {
-    return JSON.parse(data);
-  } catch (e) {} // eslint-disable-line
-
-
-  return data;
-}
-
-var WrappedFetch =
-/*#__PURE__*/
-function () {
-  function WrappedFetch(url, options, cache) {
-    classCallCheck(this, WrappedFetch);
-
-    this.cache = cache;
-    this.url = url;
-    this.options = options;
-
-    this._addfix();
-
-    return this._doFetch();
-  }
-
-  createClass(WrappedFetch, [{
-    key: "_addfix",
-    value: function _addfix() {
-      var _this$options = this.options,
-          prefix = _this$options.prefix,
-          suffix = _this$options.suffix; // 前缀
-
-      if (prefix) {
-        this.url = "".concat(prefix).concat(this.url);
-      } // 后缀
-
-
-      if (suffix) {
-        this.url = "".concat(this.url).concat(suffix);
-      }
-    }
-  }, {
-    key: "_doFetch",
-    value: function _doFetch() {
-      var _this = this;
-
-      var useCache = this.options.method === 'get' && this.options.useCache;
-
-      if (useCache) {
-        var response = this.cache.get({
-          url: this.url,
-          params: this.options.params
-        });
-
-        if (response) {
-          response = response.clone();
-
-          var _instance = Promise.resolve(response); // cache也应用response拦截器, 感觉可以不要, 因为只缓存状态200状态的数据?
-
-
-          responseInterceptors.forEach(function (handler) {
-            _instance = _instance.then(function (res) {
-              return handler(res, _this.options);
-            });
-          });
-          return this._parseResponse(_instance, true);
-        }
-      }
-
-      var instance = fetch(this.url, this.options); // 处理超时
-
-      instance = this._wrappedTimeout(instance); // 处理缓存 1.只有get 2.同时参数cache为true 才缓存
-
-      instance = this._wrappedCache(instance, useCache); // 返回解析好的数据
-
-      return this._parseResponse(instance);
-    }
-    /**
-     * 处理超时参数 #TODO 超时后连接还在继续
-     * Promise.race方式ref: @期贤 http://gitlab.alipay-inc.com/bigfish/bigfish/raw/a2595e1bc52ba624fefe2c98ac54500b8b735835/packages/umi-plugin-bigfish/src/plugins/bigfishSdk/request.js
-     * @param {*} instance fetch实例
-     */
-
-  }, {
-    key: "_wrappedTimeout",
-    value: function _wrappedTimeout(instance) {
-      var timeout = this.options.timeout;
-
-      if (timeout > 0) {
-        return Promise.race([new Promise(function (_, reject) {
-          return setTimeout(function () {
-            return reject(new RequestError("timeout of ".concat(timeout, "ms exceeded")));
-          }, timeout);
-        }), instance]);
-      } else {
-        return instance;
-      }
-    }
-    /**
-     * 处理缓存
-     * @param {*} instance fetch实例
-     * @param {boolean} useCache 是否缓存
-     */
-
-  }, {
-    key: "_wrappedCache",
-    value: function _wrappedCache(instance, useCache) {
-      var _this2 = this;
-
-      if (useCache) {
-        var _this$options2 = this.options,
-            params = _this$options2.params,
-            ttl = _this$options2.ttl;
-        return instance.then(function (response) {
-          // 只缓存状态码为 200
-          if (response.status === 200) {
-            var copy = response.clone();
-            copy.useCache = true;
-
-            _this2.cache.set({
-              url: _this2.url,
-              params: params
-            }, copy, ttl);
-          }
-
-          return response;
-        });
-      } else {
-        return instance;
-      }
-    }
-    /**
-     * 处理返回类型, 并解析数据
-     * @param {*} instance fetch实例
-     * @param {boolean} useCache 返回类型, 默认json
-     */
-
-  }, {
-    key: "_parseResponse",
-    value: function _parseResponse(instance) {
-      var _this3 = this;
-
-      var useCache = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var _this$options3 = this.options,
-          _this$options3$respon = _this$options3.responseType,
-          responseType = _this$options3$respon === void 0 ? 'json' : _this$options3$respon,
-          _this$options3$charse = _this$options3.charset,
-          charset = _this$options3$charse === void 0 ? 'utf8' : _this$options3$charse,
-          _this$options3$getRes = _this$options3.getResponse,
-          getResponse = _this$options3$getRes === void 0 ? false : _this$options3$getRes;
-      return new Promise(function (resolve, reject) {
-        var copy;
-        instance.then(function (response) {
-          copy = response.clone();
-          copy.useCache = useCache;
-
-          if (charset === 'gbk') {
-            try {
-              return response.blob().then(function (blob) {
-                return readerGBK(blob);
-              }).then(safeJsonParse);
-            } catch (e) {
-              throw new ResponseError(copy, e.message);
-            }
-          } else if (responseType === 'json' || responseType === 'text') {
-            return response.text().then(safeJsonParse);
-          } else {
-            try {
-              // 其他如blob, arrayBuffer, formData
-              return response[responseType]();
-            } catch (e) {
-              throw new ResponseError(copy, 'responseType not support');
-            }
-          }
-        }).then(function (data) {
-          if (copy.status >= 200 && copy.status < 300) {
-            // 提供源response, 以便自定义处理
-            if (getResponse) {
-              resolve({
-                data: data,
-                response: copy
-              });
-            } else {
-              resolve(data);
-            }
-          } else {
-            throw new ResponseError(copy, 'http error', data);
-          }
-        }).catch(_this3._handleError.bind(_this3, {
-          reject: reject,
-          resolve: resolve
-        }));
-      });
-    }
-    /**
-     * 处理错误
-     * @param {*} param0
-     * @param {*} error
-     */
-
-  }, {
-    key: "_handleError",
-    value: function _handleError(_ref, error) {
-      var reject = _ref.reject,
-          resolve = _ref.resolve;
-      var errorHandler = this.options.errorHandler;
-
-      if (errorHandler) {
-        try {
-          var data = errorHandler(error);
-          resolve(data);
-        } catch (e) {
-          reject(e);
-        }
-      } else {
-        reject(error);
-      }
-    }
-  }]);
-
-  return WrappedFetch;
-}();
-
-/**
- * rpc 相关, 待实现
- */
-var WrappedRpc = function WrappedRpc(input) {
-  classCallCheck(this, WrappedRpc);
-
-  return {
-    hello: input
-  };
-};
-
-/**
- * 获取request实例 调用参数可以覆盖初始化的参数. 用于一些情况的特殊处理.
- * @param {*} initOptions 初始化参数
- */
-
-var request = function request() {
-  var initOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var mapCache = new MapCache(initOptions);
-
-  var instance = function instance(input) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    options.headers = objectSpread({}, initOptions.headers, options.headers);
-    options.params = objectSpread({}, initOptions.params, options.params);
-    options = objectSpread({}, initOptions, options);
-    var method = options.method || 'get';
-    options.method = method.toLowerCase();
-
-    if (method === 'rpc') {
-      // call rpc
-      return new WrappedRpc(input, options, mapCache);
-    } else {
-      return new WrappedFetch(input, options, mapCache);
-    }
-  }; // 增加语法糖如: request.get request.post
-
-
-  var methods = ['get', 'post', 'delete', 'put', 'rpc', 'patch'];
-  methods.forEach(function (method) {
-    instance[method] = function (input, options) {
-      return instance(input, objectSpread({}, options, {
-        method: method
-      }));
-    };
-  }); // 给request 也增加一个interceptors引用;
-
-  instance.interceptors = fetch.interceptors;
-  return instance;
-};
-/**
- * extend 方法参考了ky, 让用户可以定制配置.
- * initOpions 初始化参数
- * @param {number} maxCache 最大缓存数
- * @param {string} prefix url前缀
- * @param {function} errorHandler 统一错误处理方法
- * @param {object} headers 统一的headers
- */
-
-
-var extend = function extend(initOptions) {
-  return request(initOptions);
-};
-var request$1 = request();
 
 var runtime = createCommonjsModule(function (module) {
 /**
@@ -2844,31 +2108,31 @@ var browser = invariant;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-function _classCallCheck$1(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$1(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$1(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
  * The public API for putting history on context.
  */
 
 var Router = function (_React$Component) {
-  _inherits$1(Router, _React$Component);
+  _inherits(Router, _React$Component);
 
   function Router() {
     var _temp, _this, _ret;
 
-    _classCallCheck$1(this, Router);
+    _classCallCheck(this, Router);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn$1(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.state = {
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.state = {
       match: _this.computeMatch(_this.props.history.location.pathname)
-    }, _temp), _possibleConstructorReturn$1(_this, _ret);
+    }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   Router.prototype.getChildContext = function getChildContext() {
@@ -2942,29 +2206,29 @@ Router.childContextTypes = {
 
 // Written in this round about way for babel-transform-imports
 
-function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck$1(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$2(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn$1(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$2(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits$1(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
  * The public API for a <Router> that uses HTML5 history.
  */
 
 var BrowserRouter = function (_React$Component) {
-  _inherits$2(BrowserRouter, _React$Component);
+  _inherits$1(BrowserRouter, _React$Component);
 
   function BrowserRouter() {
     var _temp, _this, _ret;
 
-    _classCallCheck$2(this, BrowserRouter);
+    _classCallCheck$1(this, BrowserRouter);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn$2(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.history = history.createBrowserHistory(_this.props), _temp), _possibleConstructorReturn$2(_this, _ret);
+    return _ret = (_temp = (_this = _possibleConstructorReturn$1(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.history = history.createBrowserHistory(_this.props), _temp), _possibleConstructorReturn$1(_this, _ret);
   }
 
   BrowserRouter.prototype.componentWillMount = function componentWillMount() {
@@ -2986,29 +2250,29 @@ BrowserRouter.propTypes = {
   children: _propTypes_15_7_2_propTypes.node
 };
 
-function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$3(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn$2(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$3(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits$2(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
  * The public API for a <Router> that uses window.location.hash.
  */
 
 var HashRouter = function (_React$Component) {
-  _inherits$3(HashRouter, _React$Component);
+  _inherits$2(HashRouter, _React$Component);
 
   function HashRouter() {
     var _temp, _this, _ret;
 
-    _classCallCheck$3(this, HashRouter);
+    _classCallCheck$2(this, HashRouter);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn$3(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.history = history.createHashHistory(_this.props), _temp), _possibleConstructorReturn$3(_this, _ret);
+    return _ret = (_temp = (_this = _possibleConstructorReturn$2(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.history = history.createHashHistory(_this.props), _temp), _possibleConstructorReturn$2(_this, _ret);
   }
 
   HashRouter.prototype.componentWillMount = function componentWillMount() {
@@ -3033,11 +2297,11 @@ var _extends$1 = Object.assign || function (target) { for (var i = 1; i < argume
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-function _classCallCheck$4(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$4(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn$3(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$4(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits$3(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var isModifiedEvent = function isModifiedEvent(event) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
@@ -3048,18 +2312,18 @@ var isModifiedEvent = function isModifiedEvent(event) {
  */
 
 var Link = function (_React$Component) {
-  _inherits$4(Link, _React$Component);
+  _inherits$3(Link, _React$Component);
 
   function Link() {
     var _temp, _this, _ret;
 
-    _classCallCheck$4(this, Link);
+    _classCallCheck$3(this, Link);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn$4(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.handleClick = function (event) {
+    return _ret = (_temp = (_this = _possibleConstructorReturn$3(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.handleClick = function (event) {
       if (_this.props.onClick) _this.props.onClick(event);
 
       if (!event.defaultPrevented && // onClick prevented default
@@ -3081,7 +2345,7 @@ var Link = function (_React$Component) {
             history.push(to);
           }
         }
-    }, _temp), _possibleConstructorReturn$4(_this, _ret);
+    }, _temp), _possibleConstructorReturn$3(_this, _ret);
   }
 
   Link.prototype.render = function render() {
@@ -3126,29 +2390,29 @@ Link.contextTypes = {
   }).isRequired
 };
 
-function _classCallCheck$5(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck$4(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$5(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn$4(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$5(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits$4(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
  * The public API for a <Router> that stores location in memory.
  */
 
 var MemoryRouter = function (_React$Component) {
-  _inherits$5(MemoryRouter, _React$Component);
+  _inherits$4(MemoryRouter, _React$Component);
 
   function MemoryRouter() {
     var _temp, _this, _ret;
 
-    _classCallCheck$5(this, MemoryRouter);
+    _classCallCheck$4(this, MemoryRouter);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn$5(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.history = history.createMemoryHistory(_this.props), _temp), _possibleConstructorReturn$5(_this, _ret);
+    return _ret = (_temp = (_this = _possibleConstructorReturn$4(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.history = history.createMemoryHistory(_this.props), _temp), _possibleConstructorReturn$4(_this, _ret);
   }
 
   MemoryRouter.prototype.componentWillMount = function componentWillMount() {
@@ -3676,11 +2940,11 @@ var matchPath = function matchPath(pathname) {
 
 var _extends$2 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-function _classCallCheck$6(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck$5(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$6(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn$5(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$6(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits$5(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var isEmptyChildren = function isEmptyChildren(children) {
   return React.Children.count(children) === 0;
@@ -3691,20 +2955,20 @@ var isEmptyChildren = function isEmptyChildren(children) {
  */
 
 var Route = function (_React$Component) {
-  _inherits$6(Route, _React$Component);
+  _inherits$5(Route, _React$Component);
 
   function Route() {
     var _temp, _this, _ret;
 
-    _classCallCheck$6(this, Route);
+    _classCallCheck$5(this, Route);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn$6(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.state = {
+    return _ret = (_temp = (_this = _possibleConstructorReturn$5(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.state = {
       match: _this.computeMatch(_this.props, _this.context.router)
-    }, _temp), _possibleConstructorReturn$6(_this, _ret);
+    }, _temp), _possibleConstructorReturn$5(_this, _ret);
   }
 
   Route.prototype.getChildContext = function getChildContext() {
@@ -3875,11 +3139,11 @@ NavLink.defaultProps = {
   "aria-current": "page"
 };
 
-function _classCallCheck$7(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck$6(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$7(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn$6(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$7(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits$6(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
  * The public API for prompting the user before navigating away
@@ -3887,12 +3151,12 @@ function _inherits$7(subClass, superClass) { if (typeof superClass !== "function
  */
 
 var Prompt = function (_React$Component) {
-  _inherits$7(Prompt, _React$Component);
+  _inherits$6(Prompt, _React$Component);
 
   function Prompt() {
-    _classCallCheck$7(this, Prompt);
+    _classCallCheck$6(this, Prompt);
 
-    return _possibleConstructorReturn$7(this, _React$Component.apply(this, arguments));
+    return _possibleConstructorReturn$6(this, _React$Component.apply(this, arguments));
   }
 
   Prompt.prototype.enable = function enable(message) {
@@ -3986,11 +3250,11 @@ var generatePath = function generatePath() {
 
 var _extends$4 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-function _classCallCheck$8(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck$7(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$8(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn$7(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$8(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits$7(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
  * The public API for updating the location programmatically
@@ -3998,12 +3262,12 @@ function _inherits$8(subClass, superClass) { if (typeof superClass !== "function
  */
 
 var Redirect = function (_React$Component) {
-  _inherits$8(Redirect, _React$Component);
+  _inherits$7(Redirect, _React$Component);
 
   function Redirect() {
-    _classCallCheck$8(this, Redirect);
+    _classCallCheck$7(this, Redirect);
 
-    return _possibleConstructorReturn$8(this, _React$Component.apply(this, arguments));
+    return _possibleConstructorReturn$7(this, _React$Component.apply(this, arguments));
   }
 
   Redirect.prototype.isStatic = function isStatic() {
@@ -4094,11 +3358,11 @@ var _extends$5 = Object.assign || function (target) { for (var i = 1; i < argume
 
 function _objectWithoutProperties$2(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
-function _classCallCheck$9(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck$8(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$9(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn$8(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$9(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits$8(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var addLeadingSlash = function addLeadingSlash(path) {
   return path.charAt(0) === "/" ? path : "/" + path;
@@ -4144,18 +3408,18 @@ var noop = function noop() {};
  */
 
 var StaticRouter = function (_React$Component) {
-  _inherits$9(StaticRouter, _React$Component);
+  _inherits$8(StaticRouter, _React$Component);
 
   function StaticRouter() {
     var _temp, _this, _ret;
 
-    _classCallCheck$9(this, StaticRouter);
+    _classCallCheck$8(this, StaticRouter);
 
     for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
 
-    return _ret = (_temp = (_this = _possibleConstructorReturn$9(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.createHref = function (path) {
+    return _ret = (_temp = (_this = _possibleConstructorReturn$8(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.createHref = function (path) {
       return addLeadingSlash(_this.props.basename + createURL(path));
     }, _this.handlePush = function (location) {
       var _this$props = _this.props,
@@ -4177,7 +3441,7 @@ var StaticRouter = function (_React$Component) {
       return noop;
     }, _this.handleBlock = function () {
       return noop;
-    }, _temp), _possibleConstructorReturn$9(_this, _ret);
+    }, _temp), _possibleConstructorReturn$8(_this, _ret);
   }
 
   StaticRouter.prototype.getChildContext = function getChildContext() {
@@ -4233,23 +3497,23 @@ StaticRouter.childContextTypes = {
 
 // Written in this round about way for babel-transform-imports
 
-function _classCallCheck$a(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck$9(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn$a(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn$9(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits$a(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits$9(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
  * The public API for rendering the first <Route> that matches.
  */
 
 var Switch = function (_React$Component) {
-  _inherits$a(Switch, _React$Component);
+  _inherits$9(Switch, _React$Component);
 
   function Switch() {
-    _classCallCheck$a(this, Switch);
+    _classCallCheck$9(this, Switch);
 
-    return _possibleConstructorReturn$a(this, _React$Component.apply(this, arguments));
+    return _possibleConstructorReturn$9(this, _React$Component.apply(this, arguments));
   }
 
   Switch.prototype.componentWillMount = function componentWillMount() {
@@ -4662,10 +3926,34 @@ var defOption = {
     'usertoken': 'string',
     'Content-Type': 'application/json;charset=utf-8'
   },
-  mode: 'cors',
-  cache: 'no-cache' // *default, no-cache, reload, force-cache,
-
+  mode: 'cors'
 };
+
+function _classCallCheck$a(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+
+var classCallCheck = _classCallCheck$a;
+
+function _defineProperties(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor) descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+  if (staticProps) _defineProperties(Constructor, staticProps);
+  return Constructor;
+}
+
+var createClass = _createClass;
 
 var stringUtils =
 /*#__PURE__*/
@@ -4688,7 +3976,9 @@ function () {
 
       if (params) {
         Object.keys(params).forEach(function (key) {
-          if (_this.isNoExit(params[key])) ;
+          if (_this.isExit(params[key])) {
+            newParams.key = params[key];
+          }
         });
       }
 
@@ -4700,8 +3990,8 @@ function () {
      */
 
   }, {
-    key: "isNoExit",
-    value: function isNoExit(str) {
+    key: "isExit",
+    value: function isExit(str) {
       if (str === '') {
         return false;
       }
@@ -4723,26 +4013,59 @@ function () {
  */
 
 
-var responseErrorIntercept = function responseErrorIntercept(response) {
-  // 判断是否是线上环境
-  if (process.env.NODE_ENV === 'development') {
-    // https://www.w3cschool.cn/fetch_api/fetch_api-y1932m68.html
-    var copRes = response.clone();
-    var resJson = copRes.json().then(function (res) {
-      console.log('%c ' + new Date().toLocaleString() + '本次返回值：', 'color:#9100ff', res);
-      return response;
-    });
-  }
+var responseErrorIntercept =
+/*#__PURE__*/
+function () {
+  var _ref = asyncToGenerator(
+  /*#__PURE__*/
+  regenerator.mark(function _callee(response) {
+    var copRes, resJson;
+    return regenerator.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            if (!(process.env.NODE_ENV === 'development')) {
+              _context.next = 6;
+              break;
+            }
 
-  return response;
-};
+            // https://www.w3cschool.cn/fetch_api/fetch_api-y1932m68.html
+            copRes = response.clone();
+            _context.next = 4;
+            return copRes.json();
+
+          case 4:
+            resJson = _context.sent;
+            console.log("%c ".concat(new Date().toLocaleString(), "\u672C\u6B21\u8FD4\u56DE\u503C\uFF1A"), 'color:#9100ff', resJson);
+
+          case 6:
+            return _context.abrupt("return", response);
+
+          case 7:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function responseErrorIntercept(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+/**
+ * 请求拦截
+ * @param url
+ * @param options
+ * @return {{options: *, url: *}}
+ */
+
 
 var requestErrorIntercept = function requestErrorIntercept(url, options) {
-  console.log(process.env.NODE_ENV); // 判断是否是线上环境
-
+  // 判断是否是开发环境
   if (process.env.NODE_ENV === 'development') {
-    console.log('%c ' + new Date().toLocaleString() + '本次请求地址：', 'color:#007eff', url);
-    console.log('%c ' + new Date().toLocaleString() + '本次请求参数：', 'color:blue', options.body);
+    console.log("%c ".concat(new Date().toLocaleString(), "\u672C\u6B21\u8BF7\u6C42\u5730\u5740\uFF1A"), 'color:#007eff', url);
+    console.log("%c ".concat(new Date().toLocaleString(), "\u672C\u6B21\u8BF7\u6C42\u53C2\u6570\uFF1A"), 'color:blue', options.body || options.params);
   }
 
   return {
@@ -4758,25 +4081,25 @@ var requestErrorIntercept = function requestErrorIntercept(url, options) {
  */
 
 
-function zlrequest(_x, _x2, _x3) {
+function zlrequest(_x2, _x3, _x4) {
   return _zlrequest.apply(this, arguments);
 }
 
 function _zlrequest() {
   _zlrequest = asyncToGenerator(
   /*#__PURE__*/
-  regenerator.mark(function _callee(url, option, callback) {
-    var newOptions, isFile, newParams, oldHeaders, tokenUrl, request;
-    return regenerator.wrap(function _callee$(_context) {
+  regenerator.mark(function _callee2(url, option, callback) {
+    var newOptions, isFile, tokenUrl, request$1;
+    return regenerator.wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
             if (!(url.length === 0)) {
-              _context.next = 2;
+              _context2.next = 2;
               break;
             }
 
-            return _context.abrupt("return", new Promise(function (reject) {
+            return _context2.abrupt("return", new Promise(function (reject) {
               return reject(new Error("无效的请求地址"));
             }));
 
@@ -4791,9 +4114,7 @@ function _zlrequest() {
             } // 去除无效的参数
 
 
-            newParams = stringUtils.buildParamsNull(newOptions.body); // 获取请求头
-
-            oldHeaders = newOptions.headers; // 获取要添加token的url
+            newOptions.body = stringUtils.buildParamsNull(newOptions.body); // 获取要添加token的url
 
             tokenUrl = sessionStorage.getItem("tokenUrl"); // 请求的地址判断
 
@@ -4805,6 +4126,7 @@ function _zlrequest() {
 
             if (newOptions.method === 'get') {
               newOptions.params = newOptions.body;
+              delete newOptions.body;
             } else {
               newOptions.data = newOptions.body;
             }
@@ -4813,33 +4135,47 @@ function _zlrequest() {
              */
 
 
-            request = extend(objectSpread({}, newOptions, {
-              maxCache: 10,
-              // 最大缓存个数, 超出后会自动清掉按时间最开始的一个.
-              credentials: 'include',
-              // 默认请求是否带上cookie
+            request$1 = request.extend(objectSpread({}, newOptions, {
               requestType: newOptions.manner
             }));
-            request.interceptors.request.use(requestErrorIntercept);
-            request.interceptors.response.use(responseErrorIntercept); // 发送请求
+            request$1.interceptors.request.use(requestErrorIntercept);
+            request$1.interceptors.response.use(responseErrorIntercept); // 发送请求
 
-            request(url).then(function (res) {
-              return res;
-            });
+            return _context2.abrupt("return", request$1(url));
 
-          case 14:
+          case 13:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
       }
-    }, _callee);
+    }, _callee2);
   }));
   return _zlrequest.apply(this, arguments);
 }
 
-exports.RequestError = RequestError;
-exports.ResponseError = ResponseError;
-exports.default = request$1;
-exports.extend = extend;
-exports.fetch = fetch;
+Object.defineProperty(exports, 'RequestError', {
+  enumerable: true,
+  get: function () {
+    return request.RequestError;
+  }
+});
+Object.defineProperty(exports, 'ResponseError', {
+  enumerable: true,
+  get: function () {
+    return request.ResponseError;
+  }
+});
+Object.defineProperty(exports, 'extend', {
+  enumerable: true,
+  get: function () {
+    return request.extend;
+  }
+});
+Object.defineProperty(exports, 'fetch', {
+  enumerable: true,
+  get: function () {
+    return request.fetch;
+  }
+});
+exports.default = request__default;
 exports.zlrequest = zlrequest;
